@@ -29,16 +29,35 @@ def prioritize_by_interests(careers: List[str], interests_text: str) -> List[str
             prioritized.update(keyword_careers)
     return list(prioritized)
 
-# --- Placeholder for LangChain + Bedrock ---
 def ai_based_recommendations(processed_data: Dict) -> str:
     """
-    This is a placeholder function. Later, it will:
-    - Embed processed_data with Titan embeddings
-    - Query ChromaDB vector store
-    - Pass results + context to Claude LLM (Bedrock)
-    """
-    return "AI reasoning will appear here once dataset and Bedrock integration are complete."
+    Skeleton for AI integration (Bedrock + LangChain).
 
+    Steps to implement later:
+    1. Embed student interests + strengths using Titan embeddings.
+    2. Query ChromaDB vector store (career dataset embeddings).
+    3. Pass retrieved careers + student info to Claude 3.5 Sonnet.
+    4. Generate structured recommendations: career, roadmap, market outlook.
+    """
+    try:
+        # Example pseudo-code for future integration
+        # from langchain.embeddings import BedrockEmbeddings
+        # from langchain.vectorstores import Chroma
+        # from langchain.chains import RetrievalQA
+        # from langchain.chat_models import BedrockChat
+
+        # embeddings = BedrockEmbeddings(model_id="amazon.titan-text-v2")
+        # llm = BedrockChat(model_id="anthropic.claude-3.5-sonnet")
+        # vector_store = Chroma(persist_directory="chroma_db", embedding_function=embeddings)
+        # retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k":5})
+        # qa_chain = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=retriever)
+        # query = f"Student data: {processed_data}"
+        # ai_output = qa_chain.run(query)
+        ai_output = "AI reasoning will appear here once dataset is integrated."
+    except Exception as e:
+        ai_output = f"AI module not ready: {str(e)}"
+    return ai_output
+    
 # --- Combined pipeline ---
 def generate_recommendations(request: CareerRequest) -> CareerResponse:
     # Step 1: Normalize and analyze
