@@ -99,7 +99,7 @@ def generate_recommendations(request: CareerRequest) -> CareerResponse:
     # careers = prioritize_by_interests(careers, request.interests)
     # careers = list(dict.fromkeys(careers))[:5]
 
-    # recommendations = []
+    recommendations = []
     # for career in careers:
     #     recommendations.append(
     #         CareerRecommendation(
