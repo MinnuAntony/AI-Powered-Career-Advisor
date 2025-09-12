@@ -1,8 +1,8 @@
 from app.utils.preprocessing import normalize_grades, analyze_strengths
 from app.schemas import CareerRequest, CareerResponse, CareerRecommendation, AlternativePathway
-from typing import List
+from typing import List, Dict
 
-# Step 1: Define a simple career mapping
+# --- Existing mappings ---
 CAREER_MAP = {
     "math": ["Data Scientist", "Actuary", "AI Engineer"],
     "physics": ["Robotics Engineer", "AI Engineer", "Astronomer"],
@@ -22,36 +22,37 @@ INTEREST_KEYWORDS = {
 }
 
 def prioritize_by_interests(careers: List[str], interests_text: str) -> List[str]:
-    """
-    Boost careers if keywords appear in interests.
-    """
     interests_lower = interests_text.lower()
     prioritized = set(careers)
-
     for keyword, keyword_careers in INTEREST_KEYWORDS.items():
         if keyword in interests_lower:
             prioritized.update(keyword_careers)
-
     return list(prioritized)
 
+# --- Placeholder for LangChain + Bedrock ---
+def ai_based_recommendations(processed_data: Dict) -> str:
+    """
+    This is a placeholder function. Later, it will:
+    - Embed processed_data with Titan embeddings
+    - Query ChromaDB vector store
+    - Pass results + context to Claude LLM (Bedrock)
+    """
+    return "AI reasoning will appear here once dataset and Bedrock integration are complete."
+
+# --- Combined pipeline ---
 def generate_recommendations(request: CareerRequest) -> CareerResponse:
-    # Step 1: Normalize grades and analyze strengths
+    # Step 1: Normalize and analyze
     normalized = normalize_grades(request.grades)
     strengths = analyze_strengths(normalized)
 
-    # Step 2: Gather careers based on strong subjects
+    # Step 2: Rule-based career selection
     careers = []
     for subject, level in strengths.items():
         if level == "Strong" and subject.lower() in CAREER_MAP:
             careers.extend(CAREER_MAP[subject.lower()])
-    
-    # Step 3: Prioritize careers based on interests
     careers = prioritize_by_interests(careers, request.interests)
-
-    # Remove duplicates and limit top 5
     careers = list(dict.fromkeys(careers))[:5]
 
-    # Step 4: Build CareerRecommendation objects
     recommendations = []
     for career in careers:
         recommendations.append(
@@ -64,7 +65,14 @@ def generate_recommendations(request: CareerRequest) -> CareerResponse:
             )
         )
 
-    # Step 5: Add placeholder alternative pathways
+    # Step 3: Placeholder AI output
+    ai_output = ai_based_recommendations({
+        "grades": normalized,
+        "strengths": strengths,
+        "interests": request.interests
+    })
+
+    # Step 4: Placeholder alternative pathways
     alternative_pathways = [
         AlternativePathway(
             field="AI Ethics",
