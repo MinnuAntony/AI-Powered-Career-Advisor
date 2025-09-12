@@ -1,5 +1,10 @@
 from fastapi import FastAPI
 from app.routes import recommend
+from dotenv import load_dotenv
+import os
+
+# Load .env variables
+load_dotenv()
 
 app = FastAPI(
     title="AI-Powered Career Advisor",
