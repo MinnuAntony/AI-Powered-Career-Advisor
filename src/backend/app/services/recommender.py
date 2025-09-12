@@ -2,6 +2,7 @@ from app.utils.preprocessing import normalize_grades, analyze_strengths
 from app.schemas import CareerRequest, CareerResponse, CareerRecommendation, AlternativePathway
 from typing import List, Dict
 import json
+import re
 
 # LangChain + Bedrock
 from langchain_aws import ChatBedrock
@@ -64,7 +65,7 @@ def ai_based_recommendations(processed_data: Dict) -> str:
         """
 
         response = llm.invoke(prompt)
-        #print(response)   # Debug: see what Bedrock actually returns
+        print(response)   # Debug: see what Bedrock actually returns
 
 
         text = response.content[0].text if isinstance(response.content, list) else response.content
