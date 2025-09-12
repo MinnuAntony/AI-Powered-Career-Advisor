@@ -66,7 +66,8 @@ def ai_based_recommendations(processed_data: Dict) -> str:
         response = llm.invoke(prompt)
 
         # Claude may return extra text → try to extract JSON
-        text = response.content[0].text
+
+        text = response.content[0] if isinstance(response.content, list) else response.content
         ai_json = json.loads(text)
         return ai_json
 
