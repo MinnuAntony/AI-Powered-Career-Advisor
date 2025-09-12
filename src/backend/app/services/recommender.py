@@ -41,7 +41,8 @@ def ai_based_recommendations(processed_data: Dict) -> str:
     No dataset, just prompt-based guidance.
     """
     try:
-        llm = ChatBedrock(model_id="anthropic.claude-3-5-sonnet-20240620")
+        llm = ChatBedrock(model_id="anthropic.claude-3-5-sonnet-20240620-v1:0")
+
 
         prompt = f"""
         You are an AI career advisor.
