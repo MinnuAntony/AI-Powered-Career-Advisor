@@ -7,25 +7,6 @@ import re
 # LangChain + Bedrock
 from langchain_aws import ChatBedrock
 
-# --- Existing mappings (rule-based fallback) ---
-# CAREER_MAP = {
-#     "math": ["Data Scientist", "Actuary", "AI Engineer"],
-#     "physics": ["Robotics Engineer", "AI Engineer", "Astronomer"],
-#     "computer_science": ["Software Engineer", "AI Engineer", "Data Scientist"],
-#     "biology": ["Biomedical Researcher", "Doctor", "Biotech Specialist"],
-#     "chemistry": ["Chemist", "Pharmacist", "Biochemist"],
-#     "english": ["Writer", "Content Strategist", "Editor"],
-#     "history": ["Historian", "Museum Curator", "Archaeologist"]
-# }
-
-# INTEREST_KEYWORDS = {
-#     "ai": ["Data Scientist", "AI Engineer"],
-#     "coding": ["Software Engineer", "Data Scientist"],
-#     "robotics": ["Robotics Engineer"],
-#     "biology": ["Biomedical Researcher", "Doctor"],
-#     "writing": ["Writer", "Content Strategist"]
-# }
-
 
 def prioritize_by_interests(careers: List[str], interests_text: str) -> List[str]:
     interests_lower = interests_text.lower()
@@ -91,27 +72,9 @@ def generate_recommendations(request: CareerRequest) -> CareerResponse:
     normalized = normalize_grades(request.grades)
     strengths = analyze_strengths(normalized)
 
-    # Step 2: Rule-based career selection (fallback)
-    # careers = []
-    # for subject, level in strengths.items():
-    #     if level == "Strong" and subject.lower() in CAREER_MAP:
-    #         careers.extend(CAREER_MAP[subject.lower()])
-    # careers = prioritize_by_interests(careers, request.interests)
-    # careers = list(dict.fromkeys(careers))[:5]
-
     recommendations = []
-    # for career in careers:
-    #     recommendations.append(
-    #         CareerRecommendation(
-    #             career=career,
-    #             reasoning=f"Based on strong performance in {', '.join([s for s, lvl in strengths.items() if lvl == 'Strong'])} and interests in '{request.interests}'.",
-    #             avg_salary="N/A",
-    #             growth="N/A",
-    #             roadmap=[]
-    #         )
-    #     )
-
-    # Step 3: AI recommendations (Claude, no dataset)
+   
+    # Step 2: AI recommendations (Claude, no dataset)
     ai_results = ai_based_recommendations({
         "grades": normalized,
         "strengths": strengths,
@@ -130,7 +93,7 @@ def generate_recommendations(request: CareerRequest) -> CareerResponse:
                 )
             )
 
-    # Step 4: Placeholder alternative pathways
+    # Step 3: Placeholder alternative pathways
     alternative_pathways = [
         AlternativePathway(
             field="AI Ethics",
