@@ -64,14 +64,22 @@ def ai_based_recommendations(processed_data: Dict) -> str:
         """
 
         response = llm.invoke(prompt)
-        print(response)   # Debug: see what Bedrock actually returns
+        #print(response)   # Debug: see what Bedrock actually returns
 
 
-        # Claude may return extra text → try to extract JSON
+        text = response.content[0].text if isinstance(response.content, list) else response.content
 
-        text = response.content[0] if isinstance(response.content, list) else response.content
-        ai_json = json.loads(text)
+        # Step 2: extract JSON inside code fences (```json ... ```) if present
+        match = re.search(r"```json\s*(\[.*\])\s*```", text, re.DOTALL)
+        if match:
+            clean_json = match.group(1)
+        else:
+            clean_json = text.strip()  # fallback: maybe raw JSON
+
+        # Step 3: parse JSON
+        ai_json = json.loads(clean_json)
         return ai_json
+
 
     except Exception as e:
         return [{"career": "AI module error", "reasoning": str(e), "avg_salary": "N/A", "growth": "N/A", "roadmap": []}]
