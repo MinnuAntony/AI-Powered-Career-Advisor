@@ -64,6 +64,8 @@ def ai_based_recommendations(processed_data: Dict) -> str:
         """
 
         response = llm.invoke(prompt)
+        print(response)   # Debug: see what Bedrock actually returns
+
 
         # Claude may return extra text → try to extract JSON
 
