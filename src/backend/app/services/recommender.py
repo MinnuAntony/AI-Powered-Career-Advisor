@@ -6,65 +6,133 @@ import re
 
 # LangChain + Bedrock
 from langchain_aws import ChatBedrock
+from langchain.prompts import PromptTemplate
 
 
-def prioritize_by_interests(careers: List[str], interests_text: str) -> List[str]:
-    interests_lower = interests_text.lower()
-    prioritized = set(careers)
-    for keyword, keyword_careers in INTEREST_KEYWORDS.items():
-        if keyword in interests_lower:
-            prioritized.update(keyword_careers)
-    return list(prioritized)
+# Define the reusable prompt template
+career_prompt = PromptTemplate(
+    input_variables=["grades", "strengths", "interests"],
+    template="""
+    You are an AI career advisor.
+    Student profile:
+    Grades: {grades}
+    Strengths: {strengths}
+    Interests: {interests}
+
+    Based on this, recommend 3–5 realistic career options.
+     Important:
+    - Consider job market demand in the student's country.
+    - If interests lack career scope, explain limitations and suggest alternatives.
+    - Include growth outlook based on market trends.
+
+    For each career, include:
+    - career name
+    - reasoning
+    - avg_salary
+    - growth
+    - roadmap (3–5 bullet steps)
+
+    Return the result as valid JSON list of objects with keys:
+    career, reasoning, avg_salary, growth, roadmap
+    """
+)
 
 
 def ai_based_recommendations(processed_data: Dict) -> str:
     """
     Direct AI reasoning with Claude 3.5 Sonnet via Bedrock.
-    No dataset, just prompt-based guidance.
+    Uses LangChain PromptTemplate for flexibility.
     """
     try:
         llm = ChatBedrock(model_id="anthropic.claude-3-5-sonnet-20240620-v1:0")
 
-
-        prompt = f"""
-        You are an AI career advisor.
-        Student profile:
-        Grades: {processed_data['grades']}
-        Strengths: {processed_data['strengths']}
-        Interests: {processed_data['interests']}
-
-        Based on this, recommend 3-5 career options.
-        For each career, include:
-        - career name
-        - reasoning (why it fits)
-        - avg_salary (rough estimate, global or US)
-        - growth (market outlook)
-        - roadmap (3-5 bullet steps student should take)
-
-        Return the result as valid JSON list of objects with keys:
-        career, reasoning, avg_salary, growth, roadmap
-        """
+        # Build the prompt dynamically
+        prompt = career_prompt.format(
+            grades=processed_data['grades'],
+            strengths=processed_data['strengths'],
+            interests=processed_data['interests'],
+        )
 
         response = llm.invoke(prompt)
         print(response)   # Debug: see what Bedrock actually returns
 
-
         text = response.content[0].text if isinstance(response.content, list) else response.content
 
-        # Step 2: extract JSON inside code fences (```json ... ```) if present
+        # Extract JSON inside ```json ... ```
         match = re.search(r"```json\s*(\[.*\])\s*```", text, re.DOTALL)
         if match:
             clean_json = match.group(1)
         else:
-            clean_json = text.strip()  # fallback: maybe raw JSON
+            clean_json = text.strip()  # fallback
 
-        # Step 3: parse JSON
         ai_json = json.loads(clean_json)
         return ai_json
 
-
     except Exception as e:
-        return [{"career": "AI module error", "reasoning": str(e), "avg_salary": "N/A", "growth": "N/A", "roadmap": []}]
+        return [{
+            "career": "AI module error",
+            "reasoning": str(e),
+            "avg_salary": "N/A",
+            "growth": "N/A",
+            "roadmap": []
+        }]
+# def prioritize_by_interests(careers: List[str], interests_text: str) -> List[str]:
+#     interests_lower = interests_text.lower()
+#     prioritized = set(careers)
+#     for keyword, keyword_careers in INTEREST_KEYWORDS.items():
+#         if keyword in interests_lower:
+#             prioritized.update(keyword_careers)
+#     return list(prioritized)
+
+
+# def ai_based_recommendations(processed_data: Dict) -> str:
+#     """
+#     Direct AI reasoning with Claude 3.5 Sonnet via Bedrock.
+#     No dataset, just prompt-based guidance.
+#     """
+#     try:
+#         llm = ChatBedrock(model_id="anthropic.claude-3-5-sonnet-20240620-v1:0")
+
+
+#         prompt = f"""
+#         You are an AI career advisor.
+#         Student profile:
+#         Grades: {processed_data['grades']}
+#         Strengths: {processed_data['strengths']}
+#         Interests: {processed_data['interests']}
+
+#         Based on this, recommend 3-5 career options.
+#         For each career, include:
+#         - career name
+#         - reasoning (why it fits)
+#         - avg_salary (rough estimate, global or US)
+#         - growth (market outlook)
+#         - roadmap (3-5 bullet steps student should take)
+
+#         Return the result as valid JSON list of objects with keys:
+#         career, reasoning, avg_salary, growth, roadmap
+#         """
+
+#         response = llm.invoke(prompt)
+#         print(response)   # Debug: see what Bedrock actually returns
+
+
+#         text = response.content[0].text if isinstance(response.content, list) else response.content
+
+#         # Step 2: extract JSON inside code fences (```json ... ```) if present
+#         match = re.search(r"```json\s*(\[.*\])\s*```", text, re.DOTALL)
+#         if match:
+#             clean_json = match.group(1)
+#         else:
+#             clean_json = text.strip()  # fallback: maybe raw JSON
+
+#         # Step 3: parse JSON
+#         ai_json = json.loads(clean_json)
+#         return ai_json
+
+
+#     except Exception as e:
+#         return [{"career": "AI module error", "reasoning": str(e), "avg_salary": "N/A", "growth": "N/A", "roadmap": []}]
 
 
 def generate_recommendations(request: CareerRequest) -> CareerResponse:
