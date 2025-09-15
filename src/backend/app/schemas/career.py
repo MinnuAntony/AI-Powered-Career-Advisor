@@ -1,9 +1,11 @@
 from pydantic import BaseModel, Field
 from typing import Dict, List, Optional
+from app.schemas.assess import AssessmentResponse  # import the assessment schema
 
 class CareerRequest(BaseModel):
     grades: Dict[str, float] = Field(..., example={"math": 85, "english": 75})
     interests: str = Field(..., example="I enjoy coding and robotics.")
+    assessment: Optional[AssessmentResponse] = None  # <-- new field
 
 class CareerRecommendation(BaseModel):
     career: str
