@@ -1,4 +1,4 @@
-import React  from "react";
+import React from "react";
 /*
   NOTE:
   - No change needed for Docker
@@ -11,7 +11,7 @@ export default function CareerRecommendations({ data }) {
     <div className="space-y-4 p-4 border rounded">
       <h2 className="text-xl font-bold">Career Recommendations</h2>
       {data.recommendations.map((rec, idx) => (
-        <div key={idx} className="p-2 border rounded">
+        <div key={idx} className="p-2 border rounded bg-white">
           <h3 className="font-semibold">{rec.career}</h3>
           <p><strong>Reasoning:</strong> {rec.reasoning}</p>
           <p><strong>Salary:</strong> {rec.avg_salary}</p>
