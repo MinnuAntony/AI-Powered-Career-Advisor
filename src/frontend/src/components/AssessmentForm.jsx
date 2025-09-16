@@ -38,6 +38,7 @@ export default function AssessmentForm({ onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // const assessment = { answers };  
 
     // Step 1: calculate scores
     const traits = {};
