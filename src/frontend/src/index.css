@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f9fafb;
+}
+
+/* NOTE:
+   - No changes needed for Docker
+   - Styling remains the same
+*/
