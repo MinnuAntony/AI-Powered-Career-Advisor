@@ -1,16 +1,3 @@
-# import re, json
-
-# def extract_json_from_text(text: str):
-#     """
-#     Extract JSON from text that may include markdown formatting.
-#     """
-#     match = re.search(r"```json\s*(\[.*\])\s*```", text, re.DOTALL)
-#     if match:
-#         return json.loads(match.group(1))
-#     try:
-#         return json.loads(text.strip())
-#     except:
-#         return []
 import re, json
 
 def extract_json_from_text(text: str):
