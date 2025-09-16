@@ -37,7 +37,7 @@ import React, { useState } from "react";
 import CareerInputForm from "../components/CareerInputForm";
 import AssessmentForm from "../components/AssessmentForm";
 import CareerRecommendations from "../components/CareerRecommendations";
-import { submitCareerRequest } from "../api/api"; // only need this now
+import { submitCareerRequest } from "../api/api";
 
 export default function Home() {
   const [careerData, setCareerData] = useState(null);
@@ -51,10 +51,7 @@ export default function Home() {
 
   const handleAssessmentSubmit = async (assessment) => {
     try {
-      // Combine grades/interests + assessment for final career request
       const finalData = { ...formData, assessment };
-      
-      // Send directly to /recommend
       const result = await submitCareerRequest(finalData);
       setCareerData(result);
     } catch (err) {
@@ -62,7 +59,7 @@ export default function Home() {
     }
   };
 
-  return (
+return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
       {!showAssessment && <CareerInputForm onSubmit={handleCareerSubmit} />}
       {showAssessment && !careerData && <AssessmentForm onSubmit={handleAssessmentSubmit} />}
