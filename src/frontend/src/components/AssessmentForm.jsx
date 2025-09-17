@@ -26,9 +26,13 @@ const QUIZ_DOMAINS = {
 export default function AssessmentForm({ onSubmit }) {
   const [answers, setAnswers] = useState(
     Object.fromEntries(
-      Object.keys(QUIZ_DOMAINS).map((d) => [d, Array(QUIZ_DOMAINS[d].length).fill(0)])
+      Object.keys(QUIZ_DOMAINS).map((d) => [
+        d,
+        Array(QUIZ_DOMAINS[d].length).fill(0)
+      ])
     )
   );
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (domain, idx, value) => {
     const newDomainAnswers = [...answers[domain]];
@@ -36,9 +40,9 @@ export default function AssessmentForm({ onSubmit }) {
     setAnswers({ ...answers, [domain]: newDomainAnswers });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // const assessment = { answers };  
+    setLoading(true);
 
     // Step 1: calculate scores
     const traits = {};
@@ -46,7 +50,7 @@ export default function AssessmentForm({ onSubmit }) {
       traits[domain] = scores.reduce((a, b) => a + b, 0);
     }
 
-    // Step 2: sort traits to find top two
+    // Step 2: sort traits
     const sorted = Object.entries(traits).sort((a, b) => b[1] - a[1]);
     const primary_trait = sorted[0][0];
     const secondary_trait = sorted[1] ? sorted[1][0] : null;
@@ -56,15 +60,31 @@ export default function AssessmentForm({ onSubmit }) {
       personality_traits: traits,
       primary_trait,
       secondary_trait,
-      suggested_careers: [] // optional, backend can fill
+      suggested_careers: []
     };
 
-    onSubmit(assessment);
+    try {
+      await onSubmit(assessment); // wait for backend response
+    } finally {
+      setLoading(false); // stop loading whether success or error
+    }
   };
 
   return (
-    <form className="space-y-6 p-6 bg-white shadow-md rounded-lg" onSubmit={handleSubmit}>
-      <h2 className="text-2xl font-bold text-gray-800">Assessment Quiz</h2>
+    <form
+      className="space-y-6 p-6 bg-white shadow-md rounded-lg"
+      onSubmit={handleSubmit}
+    >
+      <h2 className="text-2xl font-bold text-gray-800">Assessment Quiz </h2>
+      {/* Rules Section */}
+      <div className="bg-gray-100 p-4 rounded-md text-sm text-gray-700">
+        <p className="font-semibold mb-2">How to answer:</p>
+        <ul className="list-disc list-inside space-y-1">
+          <li><strong>0</strong> → Never / Not true for me</li>
+          <li><strong>1</strong> → Sometimes / Somewhat true</li>
+          <li><strong>2</strong> → Often / True for me</li>
+        </ul>
+      </div>
       {Object.entries(QUIZ_DOMAINS).map(([domain, questions]) => (
         <div key={domain} className="space-y-2">
           <h3 className="font-semibold">{domain}</h3>
@@ -83,10 +103,19 @@ export default function AssessmentForm({ onSubmit }) {
           ))}
         </div>
       ))}
-      <button className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
-        Submit Assessment
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+      >
+        {loading ? "Submitting..." : "Submit Assessment"}
       </button>
+
+      {loading && (
+        <p className="text-gray-600 mt-2">Please wait, generating recommendations...</p>
+      )}
     </form>
   );
 }
+
 
