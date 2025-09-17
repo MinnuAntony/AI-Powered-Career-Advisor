@@ -85,7 +85,6 @@ def generate_recommendations(request: CareerRequest) -> CareerResponse:
                 career=career_name,
                 reasoning=item.get("reasoning", ""),
                 avg_salary=item.get("avg_salary", ""),
-                # avg_salary=job_data.insights.avg_salary if job_data else "N/A",
                 growth=job_data.insights.future_outlook if job_data else item.get("growth", "N/A"),
                 roadmap=item.get("roadmap", [])
             )
@@ -103,3 +102,8 @@ def generate_recommendations(request: CareerRequest) -> CareerResponse:
         recommendations=recommendations[:7],
         alternative_pathways=alternative_pathways
     )
+
+
+
+
+# avg_salary=job_data.insights.avg_salary if job_data else "N/A",
