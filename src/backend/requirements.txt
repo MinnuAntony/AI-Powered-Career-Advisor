@@ -3,7 +3,6 @@ uvicorn[standard]
 pydantic
 boto3
 langchain
-chromadb
 langchain-aws
 python-dotenv
 langgraph
