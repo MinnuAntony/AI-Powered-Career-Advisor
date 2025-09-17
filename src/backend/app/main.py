@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware  #  Import
 from app.routes import recommend, jobs, assess
+from app.services import chatbot  # 👈 new
 from dotenv import load_dotenv
 
 # Load .env variables
@@ -32,6 +33,8 @@ app.add_middleware(
 app.include_router(recommend.router, prefix="/api/v1", tags=["Career Advisor"])
 app.include_router(jobs.router, prefix="/api/v1", tags=["Job Market"])
 app.include_router(assess.router, prefix="/api/v1", tags=["Assessment"])
+app.include_router(chatbot.router, prefix="/api/v1", tags=["Chatbot"])  # 👈 new
+
 
 @app.get("/health")
 def health_check():
